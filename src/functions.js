@@ -2,7 +2,7 @@ const client = require('./index')
 
 function onConnectedHandler(address, port) {
 	console.log(`* Connected to ${address}:${port}`)
-	client.say('eddyber16', 'Butler Eddy ready to help you.')
+	// client.say('eddyber16', 'Butler Eddy ready to help you.')
 }
 
 function onMessageHandler(target, context, msg, self) {
