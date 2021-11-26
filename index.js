@@ -1,14 +1,15 @@
 const tmi = require('tmi.js')
+require('dotenv').config()
 
 const options = {
 	options: {
 		debug: true
 	},
 	identity: {
-		username: 'butler_eddy',
-		password: 'oauth:mkqpr7f0giom92wg5h4jjd646b3yo3'
+		username: process.env.BOT_USERNAME,
+		password: process.env.OAUTH_TOKEN
 	},
-	channels: ['eddyber16']
+	channels: [process.env.CHANNEL_NAME]
 }
 
 const client = new tmi.client(options)
