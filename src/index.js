@@ -1,6 +1,9 @@
 const tmi = require('tmi.js')
 require('dotenv').config()
 
+// Fixes Heroku Boot timeout error
+const PORT = process.env.PORT || 8080
+
 const options = {
 	options: {
 		debug: true
