@@ -1,40 +1,51 @@
 const client = require('./index')
+const { getCommand, getCommands } = require('./config/database')
 
 function onConnectedHandler(address, port) {
 	console.log(`* Connected to ${address}:${port}`)
 	client.say('eddyber16', 'Butler Eddy ready to help you.')
 }
 
-function onMessageHandler(target, context, msg, self) {
+async function onMessageHandler(target, context, msg, self) {
 	if (self) return
 
-	let isCommand = false
-
+	// GET MESSAGE BY WORDS
 	let message = msg.trim().toLowerCase().split(' ')
 
+	// IF IS A COMMAND
 	if (message[0].startsWith('!')) {
-		isCommand = true
-		command = message[0]
-	}
 
-	if (isCommand) {
-		switch (command) {
-			case '!test':
-				client.say(target, `Hello, everybody. Butler eddy is here, sir. How could I help you?`)
-				break
-
-			case '!love':
-				client.say(target, `youuuuu cutieeeee bongoTap we all here luv you so much!!! but specially ${context.username} wants to let you know that they love you more than anything in the world cuz you're a really nice person <3 pls keep doing what you do and lemme hug you so hard >.< <3`)
-				break
-
-			case '!welcome':
-				client.say(target, `ayoooo @${message[1]} thank you so much for joining. I hope you're doing great today <3 I'd love if you could introduce yourself to the chat and let me know what are you up to today! catJAM In this co-working stream we do 50/10 pom sessions, usually 4 a day. Hopefully we can help motivate you and make the online life feel a bit less lonely!`)
-				break
+		// GET COMMANDS
+		if (message[0] === '!commands') {
+			const commands = await getCommands()
+			client.say(target,
+				`Commands available for butler Eddy: ${commands.join(', ')}`)
+			return
 		}
-	
-		console.log(`* Executed ${command} command`)
-	}
 
+		// CHECK COMMAND AVAILABILITY
+		const command = await getCommand(message[0])
+		if (!command) return
+
+		// FORMAT TEMPLATE
+		let formattedMessage = ''
+		if (command.message.includes('{user.target.name}')) {
+			formattedMessage = command.message.replace(
+				'{user.target.name}',
+				message[1]
+			)
+		} else if (command.message.includes('{user.name}')) {
+			formattedMessage = command.message.replace(
+				'{user.name}',
+				context.username
+			)
+		}else {
+			formattedMessage = command.message
+		}
+
+		client.say(target, formattedMessage)
+		console.log(`* Executed ${command.name} command`)
+	}
 }
 	
 module.exports = {
